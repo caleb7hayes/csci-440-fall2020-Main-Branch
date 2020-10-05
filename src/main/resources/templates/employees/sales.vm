@@ -7,26 +7,25 @@
 <table>
     <thead>
     <tr>
-        <th>Employee ID</th>
         <th>First Name</th>
         <th>Last Name</th>
         <th>Email</th>
+        <th>Sales Count</th>
+        <th>Sales Totals</th>
     </tr>
     </thead>
     <tbody>
-        #foreach( $employee in $employees )
+        #foreach( $info in $salesInfo )
         <tr>
-            <td><a href="/employees/$employee.EmployeeId">$employee.EmployeeId</a></td>
-            <td>$!employee.FirstName</td>
-            <td>$!employee.LastName</td>
-            <td>$!employee.Email</td>
+            <td>$!info.FirstName</td>
+            <td>$!info.LastName</td>
+            <td>$!info.Email</td>
+            <td>$!info.SalesCount</td>
+            <td>$!info.SalesTotals</td>
         </tr>
         #end
     </tbody>
 </table>
-
-$web.pagingWidget($employees)
-
 
 <a href="/employees/new">[Create New Employee]</a>
 
