@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Customer extends Model {
 
-    private long customerId;
-    private long supportRepId;
+    private Long customerId;
+    private Long supportRepId;
     private String firstName;
     private String lastName;
     private String email;
@@ -29,7 +29,6 @@ public class Customer extends Model {
     private Customer(ResultSet results) throws SQLException {
         firstName = results.getString("FirstName");
         lastName = results.getString("LastName");
-        email = results.getString("Email");
         customerId = results.getLong("CustomerId");
         supportRepId = results.getLong("SupportRepId");
     }
@@ -37,28 +36,25 @@ public class Customer extends Model {
     public String getFirstName() {
         return firstName;
     }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
 
     public String getLastName() {
         return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getEmail() {
         return email;
     }
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-    public long getCustomerId() {
+    public Long getCustomerId() {
         return customerId;
     }
 
-    public long getSupportRepId() {
+    public Long getSupportRepId() {
         return supportRepId;
+    }
+
+    public static List<Customer> all() {
+        return all(0, Integer.MAX_VALUE);
     }
 
     public static List<Customer> all(int page, int count) {
@@ -76,10 +72,6 @@ public class Customer extends Model {
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
         }
-    }
-
-    public static Customer findByEmail(String newEmailAddress) {
-        throw new UnsupportedOperationException("Implement me");
     }
 
     public static Customer find(long customerId) {

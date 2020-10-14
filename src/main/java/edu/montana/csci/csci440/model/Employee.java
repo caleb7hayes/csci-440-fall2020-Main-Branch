@@ -10,10 +10,11 @@ import java.util.List;
 
 public class Employee extends Model {
 
-    private long employeeId;
+    private Long employeeId;
     private String firstName;
     private String lastName;
     private String email;
+    private String title;
 
     public Employee() {
         // new employee for insert
@@ -24,15 +25,17 @@ public class Employee extends Model {
         lastName = results.getString("LastName");
         email = results.getString("Email");
         employeeId = results.getLong("EmployeeId");
+        title = results.getString("Title");
     }
 
     public static List<Employee.SalesSummary> getSalesSummaries() {
-        //TODO - a GROUP BY query to determine the sales, using the SalesSummary class
+        //TODO - a GROUP BY query to determine the sales (look at the invoices table), using the SalesSummary class
         return Collections.emptyList();
     }
 
     @Override
     public boolean verify() {
+        _errors.clear(); // clear any existing errors
         if (firstName == null || "".equals(firstName)) {
             addError("FirstName can't be null or blank!");
         }
@@ -113,7 +116,7 @@ public class Employee extends Model {
         this.email = email;
     }
 
-    public long getEmployeeId() {
+    public Long getEmployeeId() {
         return employeeId;
     }
 
@@ -138,6 +141,7 @@ public class Employee extends Model {
         }
     }
     public Employee getBoss() {
+        //TODO implement
         return null;
     }
 
@@ -181,12 +185,20 @@ public class Employee extends Model {
         }
     }
 
+    public void setTitle(String programmer) {
+        title = programmer;
+    }
+
+    public void setReportsTo(Employee employee) {
+        // TODO implement
+    }
+
     public static class SalesSummary {
-        String firstName;
-        String lastName;
-        String email;
-        Long salesCount;
-        BigDecimal salesTotals;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private Long salesCount;
+        private BigDecimal salesTotals;
         private SalesSummary(ResultSet results) throws SQLException {
             firstName = results.getString("FirstName");
             lastName = results.getString("LastName");

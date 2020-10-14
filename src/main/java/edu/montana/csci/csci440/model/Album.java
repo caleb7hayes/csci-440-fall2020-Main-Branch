@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Album extends Model {
 
-    long albumId;
-    long artistId;
+    Long albumId;
+    Long artistId;
     String title;
 
     public Album() {
@@ -29,16 +29,20 @@ public class Album extends Model {
         return Artist.find(artistId);
     }
 
+    public void setArtist(Artist artist) {
+        artistId = artist.getArtistId();
+    }
+
     public List<Track> getTracks() {
         return Track.forAlbum(albumId);
     }
 
-    public long getAlbumId() {
+    public Long getAlbumId() {
         return albumId;
     }
 
-    public void setAlbumId(long albumId) {
-        this.albumId = albumId;
+    public void setAlbum(Album album) {
+        this.albumId = album.getAlbumId();
     }
 
     public String getTitle() {
@@ -49,7 +53,7 @@ public class Album extends Model {
         this.title = name;
     }
 
-    public long getArtistId() {
+    public Long getArtistId() {
         return artistId;
     }
 
@@ -89,7 +93,7 @@ public class Album extends Model {
         }
     }
 
-    public static List<Album> getForArtist(long artistId) {
+    public static List<Album> getForArtist(Long artistId) {
         // TODO implement
         return Collections.emptyList();
     }

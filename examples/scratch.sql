@@ -1,2 +1,1 @@
-SELECT * FROM artists
-WHERE ArtistId=10;
+INSERT INTO genres (Name) VALUES ('A'), ('B'), ('C'), ('D'), ('E')

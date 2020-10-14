@@ -12,7 +12,7 @@ import java.util.List;
 
 public class MediaType extends Model {
 
-    private long mediaTypeId;
+    private Long mediaTypeId;
     private String name;
 
     private MediaType(ResultSet results) throws SQLException {
@@ -20,12 +20,8 @@ public class MediaType extends Model {
         mediaTypeId = results.getLong("MediaTypeId");
     }
 
-    public long getMediaTypeId() {
+    public Long getMediaTypeId() {
         return mediaTypeId;
-    }
-
-    public void setMediaTypeId(long mediaTypeId) {
-        this.mediaTypeId = mediaTypeId;
     }
 
     public String getName() {

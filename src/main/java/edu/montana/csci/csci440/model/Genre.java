@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Genre extends Model {
 
-    private long genreId;
+    private Long genreId;
     private String name;
 
     private Genre(ResultSet results) throws SQLException {
@@ -19,12 +19,8 @@ public class Genre extends Model {
         genreId = results.getLong("GenreId");
     }
 
-    public long getGenreId() {
+    public Long getGenreId() {
         return genreId;
-    }
-
-    public void setGenreId(long genreId) {
-        this.genreId = genreId;
     }
 
     public String getName() {

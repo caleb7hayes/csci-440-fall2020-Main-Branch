@@ -1,6 +1,8 @@
 package edu.montana.csci.csci440.model;
 
 import edu.montana.csci.csci440.util.DB;
+import redis.clients.jedis.Client;
+import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,13 +17,13 @@ import java.util.List;
 
 public class Track extends Model {
 
-    private long trackId;
-    private long albumId;
-    private long mediaTypeId;
-    private long genreId;
+    private Long trackId;
+    private Long albumId;
+    private Long mediaTypeId;
+    private Long genreId;
     private String name;
-    private long milliseconds;
-    private long bytes;
+    private Long milliseconds;
+    private Long bytes;
     private BigDecimal unitPrice;
 
     public Track() {
@@ -54,7 +56,8 @@ public class Track extends Model {
         }
     }
 
-    public static long count() {
+    public static Long count() {
+        Jedis redisClient = new Jedis(); // use this class to access redis and create a cache
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as Count FROM tracks")) {
             ResultSet results = stmt.executeQuery();
@@ -81,15 +84,12 @@ public class Track extends Model {
     public List<Playlist> getPlaylists(){
         return Collections.emptyList();
     }
-    public List<InvoiceItem> getInvoiceItems(){
-        return Collections.emptyList();
-    }
 
-    public long getTrackId() {
+    public Long getTrackId() {
         return trackId;
     }
 
-    public void setTrackId(long trackId) {
+    public void setTrackId(Long trackId) {
         this.trackId = trackId;
     }
 
@@ -101,19 +101,19 @@ public class Track extends Model {
         this.name = name;
     }
 
-    public long getMilliseconds() {
+    public Long getMilliseconds() {
         return milliseconds;
     }
 
-    public void setMilliseconds(long milliseconds) {
+    public void setMilliseconds(Long milliseconds) {
         this.milliseconds = milliseconds;
     }
 
-    public long getBytes() {
+    public Long getBytes() {
         return bytes;
     }
 
-    public void setBytes(long bytes) {
+    public void setBytes(Long bytes) {
         this.bytes = bytes;
     }
 
@@ -125,27 +125,31 @@ public class Track extends Model {
         this.unitPrice = unitPrice;
     }
 
-    public long getAlbumId() {
+    public Long getAlbumId() {
         return albumId;
     }
 
-    public void setAlbumId(long albumId) {
+    public void setAlbumId(Long albumId) {
         this.albumId = albumId;
     }
 
-    public long getMediaTypeId() {
+    public void setAlbum(Album album) {
+        albumId = album.getAlbumId();
+    }
+
+    public Long getMediaTypeId() {
         return mediaTypeId;
     }
 
-    public void setMediaTypeId(long mediaTypeId) {
+    public void setMediaTypeId(Long mediaTypeId) {
         this.mediaTypeId = mediaTypeId;
     }
 
-    public long getGenreId() {
+    public Long getGenreId() {
         return genreId;
     }
 
-    public void setGenreId(long genreId) {
+    public void setGenreId(Long genreId) {
         this.genreId = genreId;
     }
 
@@ -215,7 +219,7 @@ public class Track extends Model {
         }
     }
 
-    public static List<Track> forAlbum(long albumId) {
+    public static List<Track> forAlbum(Long albumId) {
         String query = "SELECT * FROM tracks WHERE AlbumId=?";
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -229,6 +233,15 @@ public class Track extends Model {
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
         }
+    }
+
+    // Sure would be nice if java supported default parameter values
+    public static List<Track> all() {
+        return all(0, Integer.MAX_VALUE);
+    }
+
+    public static List<Track> all(int page, int count) {
+        return all(page, count, "TrackId");
     }
 
     public static List<Track> all(int page, int count, String orderBy) {
@@ -247,4 +260,5 @@ public class Track extends Model {
             throw new RuntimeException(sqlException);
         }
     }
+
 }
