@@ -12,7 +12,7 @@ public class Homework3 extends DBTest {
 
     @Test
     /*
-     * Create a view tracksPlus to display the artist, song title, album, and genre for all tracks per playlist.
+     * Create a view tracksPlus to display the artist, song title, album, and genre for all tracks.
      */
     public void createTracksPlusView(){
         //TODO fill this in

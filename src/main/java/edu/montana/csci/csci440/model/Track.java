@@ -1,6 +1,8 @@
 package edu.montana.csci.csci440.model;
 
 import edu.montana.csci.csci440.util.DB;
+import redis.clients.jedis.Client;
+import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -55,6 +57,7 @@ public class Track extends Model {
     }
 
     public static Long count() {
+        Jedis redisClient = new Jedis(); // use this class to access redis and create a cache
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as Count FROM tracks")) {
             ResultSet results = stmt.executeQuery();
@@ -237,8 +240,8 @@ public class Track extends Model {
         return all(0, Integer.MAX_VALUE);
     }
 
-    public static List<Track> all(int i, int maxValue) {
-        return all(i, maxValue, "TrackId");
+    public static List<Track> all(int page, int count) {
+        return all(page, count, "TrackId");
     }
 
     public static List<Track> all(int page, int count, String orderBy) {

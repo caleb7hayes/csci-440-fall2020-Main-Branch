@@ -35,6 +35,7 @@ public class Employee extends Model {
 
     @Override
     public boolean verify() {
+        _errors.clear(); // clear any existing errors
         if (firstName == null || "".equals(firstName)) {
             addError("FirstName can't be null or blank!");
         }

@@ -55,17 +55,19 @@ public class Web {
                 if (method.getParameterTypes()[0] == Integer.class || method.getParameterTypes()[0] == Integer.TYPE) {
                     int i = Integer.parseInt(req.queryParams(property));
                     method.invoke(obj, i);
-                }
-                if (method.getParameterTypes()[0] == Date.class) {
+                } else if (method.getParameterTypes()[0] == Long.class || method.getParameterTypes()[0] == Long.TYPE) {
+                    long i = Long.parseLong(req.queryParams(property));
+                    method.invoke(obj, i);
+                } else if (method.getParameterTypes()[0] == Date.class) {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                     Date date = formatter.parse(req.queryParams(property));
                     method.invoke(obj, date);
-                }
-                if (method.getParameterTypes()[0] == String.class) {
+                } else if (method.getParameterTypes()[0] == String.class) {
                     method.invoke(obj, req.queryParams(property));
-                }
-                if (method.getParameterTypes()[0] == BigDecimal.class) {
+                } else if (method.getParameterTypes()[0] == BigDecimal.class) {
                     method.invoke(obj, parseBigDecimal(req, property));
+                } else {
+                    throw new IllegalStateException("Do not know how to set value of type " + method.getParameterTypes()[0].getName());
                 }
             }
         } catch (Exception e) {

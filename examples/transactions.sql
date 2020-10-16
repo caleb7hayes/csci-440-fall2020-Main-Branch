@@ -28,3 +28,13 @@ WHERE TrackId = 2;
 COMMIT;
 
 
+
+UPDATE artists
+SET Name="DC/AC", Name=2
+WHERE Name="AC/DC" AND ArtistId=1;
+
+
+UPDATE artists
+SET Name="DC/AC", Version=2
+WHERE Version=1 AND ArtistId=1;
+
