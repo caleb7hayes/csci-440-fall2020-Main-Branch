@@ -16,7 +16,12 @@ public class Homework3 extends DBTest {
      */
     public void createTracksPlusView(){
         //TODO fill this in
-        executeDDL("CREATE VIEW tracksPlus");
+        executeDDL("create view tracksPlus as " +
+                   "select artists.Name as ArtistName, tracks.name as TrackName, albums.Title as AlbumTitle, genres.Name as GenreName, *" +
+                   "from artists " +
+                   "join albums on artists.ArtistId = albums.ArtistId " +
+                   "join tracks on albums.AlbumId = tracks.AlbumId " +
+                   "join genres on tracks.GenreId = genres.GenreId ");
 
         List<Map<String, Object>> results = executeSQL("SELECT * FROM tracksPlus ORDER BY TrackId");
         assertEquals(3503, results.size());
@@ -36,8 +41,8 @@ public class Homework3 extends DBTest {
      */
     public void createGrammyInfoTable(){
         //TODO fill these in
-        executeDDL("create table grammy_categories");
-        executeDDL("create table grammy_infos");
+        executeDDL("create table grammy_categories (GrammyCategoryId INTEGER PRIMARY KEY, Name NVARCHAR(255))");
+        executeDDL("create table grammy_infos (ArtistId INTEGER, AlbumId INTEGER, TrackId INTEGER, GrammyCategoryId INTEGER, Status NVARCHAR(255))");
 
         // TEST CODE
         executeUpdate("INSERT INTO grammy_categories(Name) VALUES ('Greatest Ever');");
@@ -61,7 +66,13 @@ public class Homework3 extends DBTest {
         Integer before = (Integer) executeSQL("SELECT COUNT(*) as COUNT FROM genres").get(0).get("COUNT");
 
         //TODO fill this in
-        executeUpdate("INSERT");
+        executeUpdate("insert into genres (Name)\n" +
+                "values\n" +
+                "       ('Sports'),\n" +
+                "       ('Romance'),\n" +
+                "       ('Travel'),\n" +
+                "       ('Mystery'),\n" +
+                "       ('Horror')");
 
         Integer after = (Integer) executeSQL("SELECT COUNT(*) as COUNT FROM genres").get(0).get("COUNT");
         assertEquals(before + 5, after);
