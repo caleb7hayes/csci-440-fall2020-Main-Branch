@@ -172,7 +172,7 @@ public class Employee extends Model {
                      "SELECT * FROM employees LIMIT ? OFFSET ?"
              )) {
             stmt.setInt(1, count);
-            stmt.setInt(2, count * page - 2); //count * (page - 1)
+            stmt.setInt(2, count * page - count); //count * (page - 1)
             ResultSet results = stmt.executeQuery();
             List<Employee> resultList = new LinkedList<>();
             while (results.next()) {
