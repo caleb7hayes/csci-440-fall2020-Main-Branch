@@ -17,7 +17,7 @@ public class AlbumTest extends DBTest {
 
     @Test
     void testPagingWorks() {
-        assertEquals(100, Album.all(1, 100).size());
+        assertEquals(100, Album.all(0, 100).size());
         assertEquals(100, Album.all(2, 100).size());
         assertEquals(100, Album.all(3, 100).size());
         assertEquals(47, Album.all(4, 100).size());
