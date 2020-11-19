@@ -71,17 +71,23 @@ public class Track extends Model {
 
     public static Long count() {
         Jedis redisClient = new Jedis(); // use this class to access redis and create a cache
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as Count FROM tracks")) {
-            ResultSet results = stmt.executeQuery();
-            if (results.next()) {
-                return results.getLong("Count");
-            } else {
-                throw new IllegalStateException("Should find a count!");
+        String str = redisClient.get(REDIS_CACHE_KEY);
+        if(str == null) {
+            try (Connection conn = DB.connect();
+                 PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as Count FROM tracks")) {
+                ResultSet results = stmt.executeQuery();
+                str = String.valueOf(results.getLong("Count"));
+                redisClient.set(REDIS_CACHE_KEY, str);
+                if (results.next()) {
+                    return results.getLong("Count");
+                } else {
+                    throw new IllegalStateException("Should find a count!");
+                }
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
             }
-        } catch (SQLException sqlException) {
-            throw new RuntimeException(sqlException);
         }
+        return Long.parseLong(redisClient.get(REDIS_CACHE_KEY));
     }
 
     public Album getAlbum() {
@@ -203,6 +209,7 @@ public class Track extends Model {
                 stmt.setBigDecimal(5, unitPrice);
                 stmt.executeUpdate();
                 trackId = DB.getLastID(conn);
+
                 return true;
             } catch (SQLException sqlException) {
                 throw new RuntimeException(sqlException);
