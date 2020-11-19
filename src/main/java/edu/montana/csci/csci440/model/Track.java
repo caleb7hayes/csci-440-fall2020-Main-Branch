@@ -27,6 +27,8 @@ public class Track extends Model {
     private BigDecimal unitPrice;
     private String artistName;
     private String albumTitle;
+    private Long playlistId;
+    private static long count = 0;
 
     public static final String REDIS_CACHE_KEY = "cs440-tracks-count-cache";
 
@@ -49,6 +51,7 @@ public class Track extends Model {
         genreId = results.getLong("GenreId");
         artistName = results.getString("ArtistName");
         albumTitle = results.getString("Title");
+        playlistId = results.getLong("PlayListId");
     }
 
     public static Track find(long i) {
@@ -72,12 +75,13 @@ public class Track extends Model {
     public static Long count() {
         Jedis redisClient = new Jedis(); // use this class to access redis and create a cache
         String str = redisClient.get(REDIS_CACHE_KEY);
-        if(str == null) {
+        if(str == null || count != Integer.parseInt(str)) {
             try (Connection conn = DB.connect();
                  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as Count FROM tracks")) {
                 ResultSet results = stmt.executeQuery();
                 str = String.valueOf(results.getLong("Count"));
                 redisClient.set(REDIS_CACHE_KEY, str);
+                count = Integer.parseInt(str);
                 if (results.next()) {
                     return results.getLong("Count");
                 } else {
@@ -87,6 +91,7 @@ public class Track extends Model {
                 throw new RuntimeException(sqlException);
             }
         }
+
         return Long.parseLong(redisClient.get(REDIS_CACHE_KEY));
     }
 
@@ -103,7 +108,7 @@ public class Track extends Model {
     }
 
     public List<Playlist> getPlaylists(){
-        return Collections.emptyList();
+        return Playlist.forTracks(playlistId);
     }
 
     public Long getTrackId() {
@@ -209,7 +214,7 @@ public class Track extends Model {
                 stmt.setBigDecimal(5, unitPrice);
                 stmt.executeUpdate();
                 trackId = DB.getLastID(conn);
-
+                count++;
                 return true;
             } catch (SQLException sqlException) {
                 throw new RuntimeException(sqlException);
@@ -242,6 +247,7 @@ public class Track extends Model {
                      "DELETE FROM tracks WHERE TrackId=?")) {
             stmt.setLong(1, this.getTrackId());
             stmt.executeUpdate();
+            count--;
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
         }
@@ -306,6 +312,22 @@ public class Track extends Model {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, albumId);
+            ResultSet results = stmt.executeQuery();
+            List<Track> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new Track(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+    public static List<Track> forPlaylist(Long playlistId) {
+        String query = "SELECT * FROM tracks Order By Name WHERE PlaylistId=?";
+        try (Connection conn = DB.connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, playlistId);
             ResultSet results = stmt.executeQuery();
             List<Track> resultList = new LinkedList<>();
             while (results.next()) {

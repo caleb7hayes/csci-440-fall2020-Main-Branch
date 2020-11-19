@@ -2,6 +2,7 @@ package edu.montana.csci.csci440.model;
 
 import edu.montana.csci.csci440.util.DB;
 
+import java.lang.management.PlatformLoggingMXBean;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,7 +28,7 @@ public class Playlist extends Model {
     public List<Track> getTracks(){
         // TODO implement, order by track name
         // Select * from tracks order by Name
-        return Collections.emptyList();
+        return Track.forPlaylist(playlistId);
     }
 
     public Long getPlaylistId() {
@@ -79,4 +80,19 @@ public class Playlist extends Model {
         }
     }
 
+    public static List<Playlist> forTracks(Long playlistId) {
+        String query = "SELECT * FROM tracks WHERE PlaylistId=?";
+        try (Connection conn = DB.connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, playlistId);
+            ResultSet results = stmt.executeQuery();
+            List<Playlist> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new Playlist(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
 }
