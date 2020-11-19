@@ -26,6 +26,7 @@ public class Playlist extends Model {
 
     public List<Track> getTracks(){
         // TODO implement, order by track name
+        // Select * from tracks order by Name
         return Collections.emptyList();
     }
 

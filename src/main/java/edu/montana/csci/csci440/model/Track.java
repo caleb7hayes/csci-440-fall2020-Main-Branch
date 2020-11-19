@@ -25,6 +25,8 @@ public class Track extends Model {
     private Long milliseconds;
     private Long bytes;
     private BigDecimal unitPrice;
+    private String artistName;
+    private String albumTitle;
 
     public static final String REDIS_CACHE_KEY = "cs440-tracks-count-cache";
 
@@ -45,11 +47,16 @@ public class Track extends Model {
         albumId = results.getLong("AlbumId");
         mediaTypeId = results.getLong("MediaTypeId");
         genreId = results.getLong("GenreId");
+        artistName = results.getString("ArtistName");
+        albumTitle = results.getString("Title");
     }
 
     public static Track find(long i) {
         try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tracks WHERE TrackId=?")) {
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT *, artists.Name as ArtistName FROM tracks " +
+                             "Join albums On tracks.AlbumId = albums.AlbumId " +
+                             "Join artists On albums.ArtistId = artists.ArtistId  WHERE TrackId=?")) {
             stmt.setLong(1, i);
             ResultSet results = stmt.executeQuery();
             if (results.next()) {
@@ -84,9 +91,11 @@ public class Track extends Model {
     public MediaType getMediaType() {
         return null;
     }
+
     public Genre getGenre() {
         return null;
     }
+
     public List<Playlist> getPlaylists(){
         return Collections.emptyList();
     }
@@ -162,13 +171,13 @@ public class Track extends Model {
     public String getArtistName() {
         // TODO implement more efficiently
         //  hint: cache on this model object
-        return getAlbum().getArtist().getName();
+        return artistName;
     }
 
     public String getAlbumTitle() {
         // TODO implement more efficiently
         //  hint: cache on this model object
-        return getAlbum().getTitle();
+        return albumTitle;
     }
 
     public boolean verify() {
@@ -313,11 +322,10 @@ public class Track extends Model {
     public static List<Track> all(int page, int count, String orderBy) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM tracks Order By ? LIMIT ? OFFSET ?"
+                     "SELECT * FROM tracks Order By " + orderBy + " LIMIT ? OFFSET ?"
              )) {
-            stmt.setString(1, orderBy);
-            stmt.setInt(2, count);
-            stmt.setInt(3, count * (page - 1));
+            stmt.setInt(1, count);
+            stmt.setInt(2, count * (page - 1));
             ResultSet results = stmt.executeQuery();
             List<Track> resultList = new LinkedList<>();
             while (results.next()) {
