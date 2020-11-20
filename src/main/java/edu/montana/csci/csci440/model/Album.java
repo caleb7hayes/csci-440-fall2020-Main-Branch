@@ -30,7 +30,11 @@ public class Album extends Model {
     }
 
     public void setArtist(Artist artist) {
-        artistId = artist.getArtistId();
+        this.artistId = artist.getArtistId();
+    }
+
+    public void setArtistId(Long artistId){
+        this.artistId = artistId;
     }
 
     public List<Track> getTracks() {
@@ -93,6 +97,17 @@ public class Album extends Model {
             }
         } else {
             return false;
+        }
+    }
+
+    public void delete() {
+        try (Connection conn = DB.connect();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "DELETE FROM albums WHERE AlbumId=?")) {
+            stmt.setLong(1, this.getAlbumId());
+            stmt.executeUpdate();
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
         }
     }
 

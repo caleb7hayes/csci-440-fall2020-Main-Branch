@@ -259,30 +259,31 @@ public class Track extends Model {
         String query = "SELECT *, artists.Name as ArtistName FROM tracks " +
                 "Join albums On tracks.AlbumId = albums.AlbumId " +
                 "Join artists On albums.ArtistId = artists.ArtistId " +
-                "WHERE tracks.name LIKE ?";
+                "WHERE tracks.name LIKE ? ";
         args.add("%" + search + "%");
 
         // Conditionally include the query and argument
         if(artistId != null) {
-            query += " AND ArtistId=? ";
+            query += " AND artists.ArtistId=? ";
             args.add(artistId);
         }
         if(albumId != null){
-            query += " And AlbumId=? ";
+            query += " And albums.AlbumId=? ";
             args.add(albumId);
         }
-
         if(maxRuntime != null){
-            query += " And tracks.Milliseconds < ? * 1000 ";
+            query += " And Milliseconds < 1000 * ?";
             args.add(maxRuntime);
         }
         if(minRuntime != null){
-            query += " And tracks.Milliseconds > ? * 1000 ";
+            query += " And Milliseconds > 1000 * ?";
+            args.add(minRuntime);
         }
 
+        query += " Order By TrackId ";
         query += " LIMIT ? OFFSET ?";
         args.add(count);
-        args.add(count * (page - count));
+        args.add(count * page - count);
 
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -312,7 +313,7 @@ public class Track extends Model {
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, search);
             stmt.setInt(2, count);
-            stmt.setInt(3, count * (page - count));
+            stmt.setInt(3, count * page - count);
             ResultSet results = stmt.executeQuery();
             List<Track> resultList = new LinkedList<>();
             while (results.next()) {
@@ -371,6 +372,9 @@ public class Track extends Model {
     }
 
     public static List<Track> all(int page, int count, String orderBy) {
+        if(orderBy == null){
+            orderBy = "TrackId";
+        }
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement("SELECT *, artists.Name as ArtistName FROM tracks " +
                              "Join albums On tracks.AlbumId = albums.AlbumId " +
@@ -378,7 +382,7 @@ public class Track extends Model {
                              "Order By " + orderBy + " LIMIT ? OFFSET ?"
              )) {
             stmt.setInt(1, count);
-            stmt.setInt(2, count * (page - 1));
+            stmt.setInt(2, count * page - count);
             ResultSet results = stmt.executeQuery();
             List<Track> resultList = new LinkedList<>();
             while (results.next()) {
