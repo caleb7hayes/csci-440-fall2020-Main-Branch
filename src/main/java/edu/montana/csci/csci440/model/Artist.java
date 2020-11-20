@@ -15,6 +15,7 @@ public class Artist extends Model {
 
     Long artistId;
     String name;
+    String oldName;
 
     public Artist() {
     }
@@ -41,6 +42,7 @@ public class Artist extends Model {
     }
 
     public void setName(String name) {
+        this.oldName = this.name;
         this.name = name;
     }
 
@@ -52,6 +54,12 @@ public class Artist extends Model {
         _errors.clear(); // clear any existing errors
         if (name == null || "".equals(name)) {
             addError("FirstName can't be null or blank!");
+        }
+        if(artistId == null){
+            return !hasErrors();
+        }
+        else if (!oldName.equals(Artist.find(artistId).getName())) {
+            addError("No artist with this name!");
         }
         return !hasErrors();
     }

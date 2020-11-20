@@ -80,11 +80,16 @@ public class Playlist extends Model {
         }
     }
 
-    public static List<Playlist> forTracks(Long playlistId) {
-        String query = "SELECT * FROM tracks WHERE PlaylistId=?";
+    public static List<Playlist> forTracks(Long trackId) {
+        String query = "SELECT *, artists.Name as ArtistName, playlists.Name as PlaylistName FROM tracks " +
+                "Join playlist_track on tracks.TrackId = playlist_track.TrackId " +
+                "Join playlists on playlist_track.PlaylistId = playlists.PlaylistId " +
+                "Join albums On tracks.AlbumId = albums.AlbumId " +
+                "Join artists On albums.ArtistId = artists.ArtistId " +
+                "WHERE tracks.TrackId=?";
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setLong(1, playlistId);
+            stmt.setLong(1, trackId);
             ResultSet results = stmt.executeQuery();
             List<Playlist> resultList = new LinkedList<>();
             while (results.next()) {
