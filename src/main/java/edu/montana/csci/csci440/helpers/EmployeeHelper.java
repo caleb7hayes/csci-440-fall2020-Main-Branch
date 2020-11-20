@@ -18,7 +18,7 @@ public class EmployeeHelper {
         List<Employee> all = Employee.all();
         for (Employee emp : all) {
             String title = emp.getTitle();
-           List<Employee> employeesWithTitle = titleMap.get(title);
+            List<Employee> employeesWithTitle = titleMap.get(title);
            if(employeesWithTitle == null){
                employeesWithTitle = new LinkedList<>();
                titleMap.put(title, employeesWithTitle);

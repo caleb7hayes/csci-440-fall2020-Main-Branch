@@ -32,7 +32,24 @@ public class Employee extends Model {
 
     public static List<Employee.SalesSummary> getSalesSummaries() {
         //TODO - a GROUP BY query to determine the sales (look at the invoices table), using the SalesSummary class
-        return Collections.emptyList();
+        try (Connection conn = DB.connect();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT employees.FirstName, employees.LastName, " +
+                             "employees.Email, Count(Total) as SalesCount, Sum(Total) as SalesTotal " +
+                             "FROM invoices " +
+                             "Join customers on invoices.CustomerId = customers.CustomerId " +
+                             "Join employees on customers.SupportRepId = employees.EmployeeId " +
+                             "Group by employees.FirstName Having SalesTotal"
+             )) {
+            ResultSet results = stmt.executeQuery();
+            List<SalesSummary> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new SalesSummary(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
     }
 
     @Override
