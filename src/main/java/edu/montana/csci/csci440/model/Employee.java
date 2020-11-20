@@ -35,7 +35,7 @@ public class Employee extends Model {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT employees.FirstName, employees.LastName, " +
-                             "employees.Email, Count(Total) as SalesCount, Sum(Total) as SalesTotal " +
+                             "employees.Email, Count(Total) as SalesCount, Round(Sum(Total),2) as SalesTotal " +
                              "FROM invoices " +
                              "Join customers on invoices.CustomerId = customers.CustomerId " +
                              "Join employees on customers.SupportRepId = employees.EmployeeId " +

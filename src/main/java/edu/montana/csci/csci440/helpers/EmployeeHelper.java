@@ -12,12 +12,12 @@ public class EmployeeHelper {
         // TODO, change this to use a single query operation to get all employees
         Employee employee = Employee.find(1); // root employee
         // and use this data structure to maintain reference information needed to build the tree structure
-        Map<Long, List<Employee>> employeeMap = new HashMap<>();
+        //Map<Long, List<Employee>> employeeMap = new HashMap<>();
 
-        Map<String, List<Employee>> titleMap = new HashMap<>();
+        Map<Long, List<Employee>> titleMap = new HashMap<>();
         List<Employee> all = Employee.all();
         for (Employee emp : all) {
-            String title = emp.getTitle();
+            Long title = emp.getReportsTo();
             List<Employee> employeesWithTitle = titleMap.get(title);
            if(employeesWithTitle == null){
                employeesWithTitle = new LinkedList<>();
@@ -25,8 +25,8 @@ public class EmployeeHelper {
            }
            employeesWithTitle.add(emp);
         }
-
-        return "<ul>" + makeTree(employee, employeeMap) + "</ul>";
+        System.out.println(titleMap.get(employee));
+        return "<ul>" + makeTree(employee, titleMap) + "</ul>";
     }
 
     // TODO - currently this method just usese the employee.getReports() function, which
@@ -34,7 +34,7 @@ public class EmployeeHelper {
     public static String makeTree(Employee employee, Map<Long, List<Employee>> employeeMap) {
         String list = "<li><a href='/employees" + employee.getEmployeeId() + "'>"
                 + employee.getEmail() + "</a><ul>";
-        List<Employee> reports = employee.getReports();
+        List<Employee> reports = employeeMap.get(employee.getReportsTo());
         for (Employee report : reports) {
             list += makeTree(report, employeeMap);
         }

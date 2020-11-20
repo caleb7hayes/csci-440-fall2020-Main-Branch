@@ -1,6 +1,7 @@
 package edu.montana.csci.csci440.controller;
 
 import edu.montana.csci.csci440.model.Album;
+import edu.montana.csci.csci440.model.Artist;
 import edu.montana.csci.csci440.util.Web;
 
 import java.util.List;
